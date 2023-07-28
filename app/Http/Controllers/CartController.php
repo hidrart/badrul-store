@@ -4,64 +4,35 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreCartRequest;
-use App\Http\Requests\UpdateCartRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index()
     {
-        //
+        $carts = Cart::with(['product.galleries', 'user'])->where('users_id', Auth::user()->id)->get();
+
+        return view('pages.cart', [
+            'carts' => $carts
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function delete(Request $request, $id)
     {
-        //
+        $cart = Cart::findOrFail($id);
+        $cart->delete();
+
+        return redirect()->route('cart');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCartRequest $request)
+    public function success()
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Cart $cart)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Cart $cart)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCartRequest $request, Cart $cart)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Cart $cart)
-    {
-        //
+        return view('pages.success');
     }
 }
